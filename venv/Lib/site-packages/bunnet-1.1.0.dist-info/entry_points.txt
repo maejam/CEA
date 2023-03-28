@@ -1,0 +1,3 @@
+[console_scripts]
+bunnet=bunnet.executors.migrate:migrations
+
