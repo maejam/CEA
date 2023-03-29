@@ -1,5 +1,5 @@
-from .db import init_db, MongoAPI
 import os
+
 
 from flask import Flask
 from flask_bcrypt import Bcrypt
@@ -18,6 +18,9 @@ bootstrap = Bootstrap()
 mail = Mail()
 
 
+from .db import init_db
+
+
 def create_app(config_name=None):
     """ App factory """
 
@@ -33,9 +36,6 @@ def create_app(config_name=None):
     DB_CONN_STR = app.config["DB_CONN_STR"]
     DB_NAME = app.config["DB_NAME"]
     init_db(DB_CONN_STR, DB_NAME)
-
-    # Initialize API for handle linkedin scrapper posts
-    client_api = MongoAPI(DB_CONN_STR, DB_NAME, data)
 
     # Register extensions
     bcrypt.init_app(app)
@@ -55,7 +55,5 @@ def create_app(config_name=None):
     from .auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint)
 
-    from .api import api as api_blueprint
-    app.register_blueprint(api_blueprint, url_prefix='/api/v1')
 
     return app
