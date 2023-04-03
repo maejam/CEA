@@ -8,7 +8,6 @@ from .models import User
 from .forms import (RegistrationForm, LoginForm, UpdateAccountForm,
                     RequestResetForm, ResetPasswordForm)
 
-
 auth = Blueprint("auth", __name__)
 
 
@@ -27,7 +26,7 @@ def register():
         hashed_pw = bcrypt.generate_password_hash(form.password.data).decode("utf-8")
         user = User(username=form.username.data, email=form.email.data, password=hashed_pw)
         user.insert()
-        flash(f"Account successfully created. You are now able to log in.", "success")
+        flash("Account successfully created. You are now able to log in.", "success")
         return redirect(url_for("auth.login"))
 
     return render_template("register.html", title="Register", form=form)
@@ -46,7 +45,7 @@ def login():
             next_page = request.args.get("next")
             if next_page == url_for("auth.logout"):
                 next_page = None
-            flash(f"Successfully Logged In!", "success")
+            flash("Successfully Logged In!", "success")
             return redirect(next_page) if next_page else redirect(url_for("main.home"))
 
         else:
@@ -82,9 +81,9 @@ def account():
 def send_reset_email(user):
     token = user.get_reset_token()
     msg = Message("Reset your Password!",
-                 sender=current_app.config["MAIL_USERNAME"],
-                 recipients=[user.email]
-                 )
+                    sender=current_app.config["MAIL_USERNAME"],
+                    recipients=[user.email]
+                    )
     msg.body = f""" Please click on the link below to reset your password:
 {url_for("auth.reset_token", token=token, _external=True)} """
     mail.send(msg)
@@ -120,7 +119,7 @@ def reset_token(token):
         hashed_pw = bcrypt.generate_password_hash(form.password.data).decode("utf-8")
         user.password = hashed_pw
         user.save()
-        flash(f"Your password has been correctly updated. You can now log in.", "success")
+        flash("Your password has been correctly updated. You can now log in.", "success")
         return redirect(url_for("auth.login"))
 
-    return render_template("reset_token.html",title="Reset Password", form=form)
+    return render_template("reset_token.html", title="Reset Password", form=form)

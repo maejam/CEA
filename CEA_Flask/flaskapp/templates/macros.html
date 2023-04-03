@@ -1,3 +1,7 @@
+{% macro link(text, url) -%}
+    <a href="{{ url }}">{{ text }}</a>
+{%- endmacro %}
+
 {% macro data_table(headers, data) %}
   <table id="data" class="table table-striped">
     <thead>
@@ -9,11 +13,21 @@
     </thead>
     <tbody>
       {% for row in data %}
-        <tr>
-          {% for cell in row %}
-            <td>{{ cell[1] }}</td>
-          {% endfor %}
-        </tr>
+           <tr>
+              <td>
+                  <a href="{{ row.url }}" target="_blank">
+                    <img src="{{ url_for('static', filename='img/linkedin.png') }}" alt="LinkedIn" width="15" height="15"/>
+                  </a>
+                </td>
+              <td>{{ row.class_id }}</td>
+              <td>{{ row.author }}</td>
+              <td>
+                  <a href="/document/{{ row.id }}">
+                  {{ row.content }}
+                  </a>
+              </td>
+              <td>{{ row.date }}</td>
+            </tr>
       {% endfor %}
     </tbody>
   </table>

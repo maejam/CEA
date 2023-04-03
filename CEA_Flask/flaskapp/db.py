@@ -1,7 +1,6 @@
 from pymongo import MongoClient
 import bunnet as bn
 
-
 from .models import User, Document, LinkedIn
 
 

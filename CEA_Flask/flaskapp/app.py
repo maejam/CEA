@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template
 from pydantic.error_wrappers import ValidationError
 
-
 from .models import Document, DocumentShortView
 
 
@@ -12,7 +11,7 @@ main = Blueprint("main", __name__)
 @main.route("/home")
 def home():
     documents = Document.find(with_children=True).project(DocumentShortView)
-    headers = ("id", "Source", "Author", "Content")
+    headers = ("", "Type", "Author", "Content", "Date")
     return render_template("home.html", title="Documents", headers=headers, data=documents)
 
 

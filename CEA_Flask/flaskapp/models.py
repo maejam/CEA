@@ -1,28 +1,26 @@
 import datetime
-from typing import Optional, Dict
+from typing import Optional
 
-
-import pymongo
-from pydantic import BaseModel, Field, validator, constr
-from bson.objectid import ObjectId
-import bunnet as bn
 import jwt
 from flask import current_app
 from flask_login import UserMixin
+from pydantic import BaseModel, Field, constr
+
+import bunnet as bn
 
 
 class User(bn.Document, UserMixin):
-    username: bn.Indexed(str, unique=True)#, index_type=pymongo.TEXT)
-    email: bn.Indexed(str, unique=True)#, index_type=pymongo.TEXT)
+    username: bn.Indexed(str, unique=True)
+    email: bn.Indexed(str, unique=True)
     password: str
     created: datetime.datetime = datetime.datetime.utcnow()
 
     def get_reset_token(self, expires_seconds=1800):
         token = jwt.encode(
-                {
-                    "user_id": str(self.id),
-                    "exp": datetime.datetime.utcnow()+datetime.timedelta(seconds=expires_seconds),
-                },
+            {
+                "user_id": str(self.id),
+                "exp": datetime.datetime.utcnow() + datetime.timedelta(seconds=expires_seconds),
+            },
                 current_app.config["SECRET_KEY"],
                 algorithm="HS256"
                 )
@@ -36,8 +34,9 @@ class User(bn.Document, UserMixin):
                 current_app.config['SECRET_KEY'],
                 leeway=datetime.timedelta(seconds=10),
                 algorithms=["HS256"]
-                )
-        except:
+            )
+        # TODO avec quelle exception?
+        except Exception as e:
             return False
         return User.get(data.get("user_id")).run()
 
@@ -48,11 +47,12 @@ class Author(BaseModel):
 
 
 class Document(bn.Document):
-    # title: str
     author: str
     content: str
-    # inserted: datetime.datetime = datetime.datetime.utcnow()
-    # grades: Optional[Dict[User, int]]
+    url: Optional[str] = None
+    # Ajouter la date en optionnel
+    date: Optional[str] = None
+    inserted: datetime.datetime = datetime.datetime.utcnow()
 
     class Settings:
         is_root = True
@@ -62,8 +62,12 @@ class LinkedIn(Document):
     pass
 
 
+# Permet de selectionner les champs à afficher
 class DocumentShortView(BaseModel):
     id: bn.PydanticObjectId = Field(alias="_id")
-    class_id: str =Field(alias="_class_id")
-    author: constr(curtail_length=25)
-    content: constr(curtail_length=100)
+    # class_id = source
+    class_id: str = Field(alias="_class_id")
+    author: constr(curtail_length=25) = ""
+    content: constr(curtail_length=100) = ""
+    url: Optional[str] = None
+    date: Optional[str] = None

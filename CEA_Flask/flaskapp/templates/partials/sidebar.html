@@ -1,0 +1,59 @@
+<!-- Sidebar -->
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+  <!-- Sidebar - Brand -->
+  <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ url_for('main.home') }}">
+    <div class="sidebar-brand-icon">
+      <i class="fas fa-home"></i>
+    </div>
+    <div class="sidebar-brand-text mx-3">CEA</div>
+  </a>
+
+  <!-- Divider -->
+  <hr class="sidebar-divider my-0">
+
+  <!-- Nav Item - Recherche -->
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('main.home') }}">
+      <i class="fas fa-fw fa-search"></i>
+      <span>Recherche</span>
+    </a>
+  </li>
+
+  <!-- Nav Item - Inscription -->
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('auth.register') }}">
+      <i class="fas fa-fw fa-user-plus"></i>
+      <span>Inscription</span>
+    </a>
+  </li>
+
+  <!-- Nav Item - Connexion -->
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('auth.login') }}">
+      <i class="fas fa-fw fa-sign-in-alt"></i>
+      <span>Connexion</span>
+    </a>
+  </li>
+
+  <!-- Nav Item - Déconnexion -->
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('auth.logout') }}">
+      <i class="fas fa-fw fa-sign-out-alt"></i>
+      <span>Déconnexion</span>
+    </a>
+  </li>
+
+  <!-- Nav Item - Compte -->
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('auth.account') }}">
+      <i class="fas fa-fw fa-user"></i>
+      <span>Compte</span>
+    </a>
+  </li>
+
+  <!-- Divider -->
+  <hr class="sidebar-divider d-none d-md-block">
+
+</ul>
+<!-- End of Sidebar -->

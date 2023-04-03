@@ -1,13 +1,12 @@
 import os
 
-
 from flask import Flask
 from flask_bcrypt import Bcrypt
-from flask_login import LoginManager
 from flask_bootstrap import Bootstrap
+from flask_login import LoginManager
 from flask_mail import Mail
 
-
+from .db import init_db
 from config import config
 
 
@@ -17,13 +16,10 @@ login_manager = LoginManager()
 bootstrap = Bootstrap()
 mail = Mail()
 
-
 from .db import init_db
-
 
 def create_app(config_name=None):
     """ App factory """
-
     if config_name is None:
         config_name = os.environ.get("APP_CONFIG", "development")
 
@@ -54,6 +50,4 @@ def create_app(config_name=None):
 
     from .auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint)
-
-
     return app

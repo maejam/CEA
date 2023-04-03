@@ -3,8 +3,14 @@
 
 {% block content %}
   <h1>{{ document.author }}</h1>
+     <button class="btn btn-primary" onclick="goBack()">Retour</button>
   <hr>
   <div>
       {{ document.content }}
   </div>
+    <script>
+        function goBack() {
+            window.history.back(); // Retourne à la page précédente
+        }
+    </script>
 {% endblock content %}

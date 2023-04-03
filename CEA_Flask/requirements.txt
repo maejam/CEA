@@ -27,3 +27,6 @@ typing_extensions==4.4.0
 visitor==0.1.3
 Werkzeug==2.2.2
 WTForms==3.0.1
+requests==2.4
+protobuf==3.20.3
+flake8

@@ -1,0 +1,4 @@
+- CEA_mongo : lancement de la BD Mongo, eventuellement reprise depuis dernier backup  
+- CEA_Flask : IHM  
+- CEA_linkedin_scrap : Recuperation posts  
+- Scrapping_Google_Scholar : Recuperation posts Google scholar 
