@@ -7,7 +7,7 @@ class Config():
     SECRET_KEY = os.environ.get("SECRET_KEY",
                                 "2403b10a2baad99dad060f06e01a711d418378f7a6f31f29e5f2db0376964165")
 
-    DB_CONN_STR = os.environ.get("DB_CONN_STR", "mongodb://127.0.0.1:27017")
+    DB_CONN_STR = os.environ.get("DB_CONN_STR", "mongodb://mongo:27017")
     DB_NAME = os.environ.get("DB_NAME", "CEA")
 
     MAIL_SERVER = "smtp.office365.com"

@@ -3,14 +3,29 @@ Ce script doit être exécuté une seule fois pour initialiser la base de donné
 a partir du dernier backup.
 """
 import json
+import time
 import zipfile
 from pymongo import MongoClient
+from pymongo.errors import ConnectionFailure
 import logging as log
 #Les logs sortent dans le terminal
 log.basicConfig(level=log.INFO)
 
 # Se connecter à la base de données mongoDB
-client = MongoClient('mongodb://127.0.0.1:27017/')
+mongodb_host = 'mongo'
+mongodb_port = '27017'
+mongodb_url = f'mongodb://{mongodb_host}:{mongodb_port}/'
+
+while True:
+    try:
+        client = MongoClient(mongodb_url)
+        # Vérifier la connexion à MongoDB
+        client.admin.command('ping')
+        break
+    except ConnectionFailure as e:
+        log.info(f"Erreur de connexion à MongoDB: {e}. Réessayer dans 5 secondes...")
+        time.sleep(5)
+
 # Check if DB CEA exist, if it doesn't, create it
 db = client['CEA']
 

@@ -1,0 +1,73 @@
+# external = true permet qu'on utilise le network extérieur créé dans le docker compose de traefik et nommé traefik_netwk
+networks:
+  traefik_netwk:
+    external: ${TRAEFIK_NETWK_EXTERNAL:-true}
+
+volumes:
+  mongo_configdb:
+  mongo_db:
+
+services:
+  ihm:
+    networks:
+      # utilisation du réseau traefik_netwk
+      - traefik_netwk
+    build: ./CEA_Flask
+    working_dir: /home/app/ihm
+    # Dummy port if EXPOSE_PORT is not set
+    ports:
+      - "${EXPOSE_PORT:-65535:65535}"
+    depends_on:
+      - mongo
+    command: "python run.py"
+
+    # option de redémarrage si le container plante
+    restart: unless-stopped
+
+    # option pour tjs rebuilder l'image quand on execute docker compose up -d (sans l'option --build). Indispensable pour que le CI/CD fonctionne pour un stack dans portainer
+    # issue identifié : https://github.com/portainer/portainer/issues/6288
+    # explication pull_policy : https://stackoverflow.com/questions/37685581/how-to-get-docker-compose-to-use-the-latest-image-from-repository/66136860#66136860
+    pull_policy: build
+
+    #donner un nom à l'image (optionnel) : : fonctionne mais génère une erreur en début de lancement du docker compose up. Ne pose pas de pb
+    # pour éviter l'erreur et rebuilder l'image à chaque lancement en mode daemon : docker-compose up --build -d
+    image: ${APP_NAME:?}
+
+    #donner un nom au container (optionnel)
+    container_name: ${APP_NAME:?}
+
+    labels:
+      - "traefik.enable=true"
+      
+      # router nommé ${APP_NAME} définissant l'accès au service
+      - "traefik.http.routers.${APP_NAME:?}.rule=Host(`${SUBDOMAIN:?}.${DOMAIN:?}`)"
+      - "traefik.http.routers.${APP_NAME:?}.tls=true"
+
+      # service nommé ${APP_NAME} pour indiquer le port utilisé par l'app dans le container (permet de remplacer le mapping de ports pour le service)
+      # 8501 est le port utilisé par streamlit
+      - "traefik.http.services.${APP_NAME:?}.loadbalancer.server.port=${APP_EXPOSED_PORT:?}"
+
+      # rajouter admin_auth dans les middlewares si on veut mettre une authentification sur cette app
+      - "traefik.http.routers.${APP_NAME:?}.middlewares=security-headers"
+  mongo:
+    networks:
+      - traefik_netwk
+
+    # version image compatible avec le CPU de la VM
+    image: mongo:4.4.19
+    volumes:
+      - mongo_configdb:/data/configdb
+      - mongo_db:/data/db
+    expose:
+      - "27017"
+    # option de redémarrage si le container plante
+    restart: unless-stopped
+  mongo_init:
+    build:
+      context: ./CEA_mongo
+      dockerfile: Dockerfile
+    depends_on:
+      - mongo
+    networks:
+      - traefik_netwk
+    restart: "no"

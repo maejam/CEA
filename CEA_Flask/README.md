@@ -16,6 +16,6 @@ Puis créer un nouvel environnement:
 2. Verifier : http://127.0.0.1:5000
 
 # Note
-Pour le reset password, la route `/reset_password` n'est pas encore branchée
+Pour le reset password, le compte outlook a été bloqué par Microsoft, il faudra en configurer un autre 
 
 https://startbootstrap.com/theme/sb-admin-2 est le template utilisé pour le look & feel de l'application.
