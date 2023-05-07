@@ -19,6 +19,7 @@ remplacer dev.env par dev.env.local
 docker-compose -f docker-compose.yml --env-file dev.env.local up  
 docker compose -f docker-compose.yml --env-file dev.env.local up --build
 </pre>
+Et acceder à l'appli sur http://localhost:5000
 
 ### Repo "deploy"
 Ce qui a été fait pour initialisé le repo "deploy" :
