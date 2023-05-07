@@ -20,4 +20,13 @@ docker-compose -f docker-compose.yml --env-file dev.env.local up
 docker compose -f docker-compose.yml --env-file dev.env.local up --build
 </pre>
 
-
+### Repo "deploy"
+Ce qui a été fait pour initialisé le repo "deploy" :
+<pre>
+git clone git@github.com:e-gava/CEA_CFR_deploy.git
+cd CEA_CFR_deploy/
+git remote add upstream git@github.com:e-gava/CEA_CFR.git
+git fetch upstream
+git merge upstream/main
+git push origin main
+</pre>
