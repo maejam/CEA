@@ -14,6 +14,7 @@ class User(bn.Document, UserMixin):
     email: bn.Indexed(str, unique=True)
     password: str
     created: datetime.datetime = datetime.datetime.utcnow()
+    is_admin: bool = True
 
     def get_reset_token(self, expires_seconds=1800):
         token = jwt.encode(
