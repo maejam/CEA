@@ -18,13 +18,26 @@
 </head>
 
 <body id="page-top">
+  
   <div id="wrapper">
     {% include 'partials/sidebar.html' %}
     <div id="content-wrapper" class="d-flex flex-column">
       <div id="content">
         {% include 'partials/topbar.html' %}
         <div class="container-fluid">
+          
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+
           {% block content %}{% endblock%}
+
         </div>
       </div>
       {% include 'partials/footer.html' %}

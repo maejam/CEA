@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template
+from flask_login import login_required
 from pydantic.error_wrappers import ValidationError
 
 from .models import Document, DocumentShortView
@@ -9,6 +10,7 @@ main = Blueprint("main", __name__)
 
 @main.route("/")
 @main.route("/home")
+@login_required
 def home():
     documents = Document.find(with_children=True).project(DocumentShortView)
     headers = ("", "Type", "Author", "Content", "Date")
@@ -16,6 +18,7 @@ def home():
 
 
 @main.route("/document/<string:doc_id>")
+@login_required
 def document(doc_id):
     try:
         document = Document.get(doc_id, with_children=True).run()
