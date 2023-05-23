@@ -1,13 +1,15 @@
 # Scrapping_Google_Scholar
 
-J'ai mis à disposition mon Code.
-C'est sous format notebook.
+Tout se passe dans le "main".
 
-# Code push and retrieve
+# Code push and retrieve local host
 
-1. Le premier code se lance et demande un input utilisateur : la requete Google Scholar qu'on souhaite faire.
-Cela est ensuite stocké dans le base mongo.
+on lance le serveur uvicorn avec cette commande.
 
-2. Le deuxième code vient récupérer les données de la base mongo. 
-L'input demandé lors de l'éxécution du code est le mot que l'on souhaite avoir dans le résumé de l'article.
-Le code retourne le titre et le résumé de l'article (pour plus de lisibilité)
+uvicorn main:app --reload
+
+on accède au swagger via :
+
+http://127.0.0.1:8000/docs
+
+
