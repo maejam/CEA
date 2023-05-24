@@ -48,8 +48,8 @@ class Author(BaseModel):
 
 
 class Document(bn.Document):
-    author: str
-    content: str
+    author: str = ""
+    content: str = ""
     url: Optional[str] = None
     # Ajouter la date en optionnel
     date: Optional[str] = None
@@ -57,6 +57,9 @@ class Document(bn.Document):
 
     class Settings:
         is_root = True
+
+    def as_dict(self):
+        return {"source": self.__class__.__name__, "author": self.author, "content": self.content, "url": self.url, "date": self.date, "inserted": self.inserted}
 
 
 class LinkedIn(Document):

@@ -4,8 +4,283 @@
 {% block content %}
   <div>
       <a href="http://localhost:5001" target="_blank">MLFLOW UI</a>
-  <div>
-    <h1>Train new model</h1>
+  </div>
+  <div class="container">
+    <h2>Train new model</h2>
+    <form method="POST" action="" enctype="multipart/form-data">
+      {{ train_form.hidden_tag() }}
+      <fieldset class="form-group">
+        <legend class="border-bottom mb-4">Input data</legend>
+        <div class="form-group">
+          {{ train_form.data.label(class="form-control-label") }}
+          {% if train_form.data.errors %}
+            {{ train_form.data(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in train_form.data.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          {% else %}
+            {{ train_form.data(class="form-control form-control-lg") }}
+            <small>{{ train_form.data.description }}</small>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          {{ train_form.content_col.label(class="form-control-label") }}
+          {% if train_form.content_col.errors %}
+            {{ train_form.content_col(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in train_form.content_col.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          {% else %}
+            {{ train_form.content_col(class="form-control form-control-lg") }}
+            <small>{{ train_form.content_col.description }}</small>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          {{ train_form.label_col.label(class="form-control-label") }}
+          {% if train_form.label_col.errors %}
+            {{ train_form.label_col(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in train_form.label_col.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          {% else %}
+            {{ train_form.label_col(class="form-control form-control-lg") }}
+            <small>{{ train_form.label_col.description }}</small>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          {{ train_form.train_size.label(class="form-control-label") }}
+          {% if train_form.train_size.errors %}
+            {{ train_form.train_size(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in train_form.train_size.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          {% else %}
+            {{ train_form.train_size(class="form-control form-control-lg") }}
+            <small>{{ train_form.train_size.description }}</small>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          {{ train_form.test_size.label(class="form-control-label") }}
+          {% if train_form.test_size.errors %}
+            {{ train_form.test_size(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in train_form.test_size.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          {% else %}
+            {{ train_form.test_size(class="form-control form-control-lg") }}
+            <small>{{ train_form.test_size.description }}</small>
+          {% endif %}
+        </div>
+      </fieldset>
+      <fieldset class="form-group">
+        <legend>Model parameters</legend>
+        <div class="form-group">
+          {{ train_form.checkpoint.label(class="form-control-label") }}
+          {% if train_form.checkpoint.errors %}
+            {{ train_form.checkpoint(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in train_form.checkpoint.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+          </div>
+          {% else %}
+            {{ train_form.checkpoint(class="form-control form-control-lg") }}
+            <small>{{ train_form.checkpoint.description }}</small>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          {{ train_form.model_type.label(class="form-control-label") }}
+          {% if train_form.model_type.errors %}
+            {{ train_form.model_type(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in train_form.model_type.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          {% else %}
+            {{ train_form.model_type(class="form-control form-control-lg") }}
+            <small>{{ train_form.model_type.description }}</small>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          {{ train_form.epochs.label(class="form-control-label") }}
+          {% if train_form.epochs.errors %}
+            {{ train_form.epochs(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in train_form.epochs.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          {% else %}
+            {{ train_form.epochs(class="form-control form-control-lg") }}
+            <small>{{ train_form.epochs.description }}</small>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          {{ train_form.batch_size.label(class="form-control-label") }}
+          {% if train_form.batch_size.errors %}
+            {{ train_form.batch_size(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in train_form.batch_size.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          {% else %}
+            {{ train_form.batch_size(class="form-control form-control-lg") }}
+            <small>{{ train_form.batch_size.description }}</small>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          {{ train_form.labels.label(class="form-control-label") }}
+          {% if train_form.labels.errors %}
+            {{ train_form.labels(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in train_form.labels.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          {% else %}
+            {{ train_form.labels(class="form-control form-control-lg") }}
+            <small>{{ train_form.labels.description }}</small>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          {{ train_form.inverse_labels.label(class="form-control-label") }}
+          {% if train_form.inverse_labels.errors %}
+            {{ train_form.inverse_labels(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in train_form.inverse_labels.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          {% else %}
+            {{ train_form.inverse_labels(class="form-control form-control-lg") }}
+            <small>{{ train_form.inverse_labels.description }}</small>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          {{ train_form.initial_lr.label(class="form-control-label") }}
+          {% if train_form.initial_lr.errors %}
+            {{ train_form.initial_lr(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in train_form.initial_lr.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          {% else %}
+            {{ train_form.initial_lr(class="form-control form-control-lg") }}
+            <small>{{ train_form.initial_lr.description }}</small>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          {{ train_form.final_lr.label(class="form-control-label") }}
+          {% if train_form.final_lr.errors %}
+            {{ train_form.final_lr(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in train_form.final_lr.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          {% else %}
+            {{ train_form.final_lr(class="form-control form-control-lg") }}
+            <small>{{ train_form.final_lr.description }}</small>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          {{ train_form.class_weight.label(class="form-control-label") }}
+          {% if train_form.class_weight.errors %}
+            {{ train_form.class_weight(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in train_form.class_weight.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          {% else %}
+            {{ train_form.class_weight(class="form-control form-control-lg") }}
+            <small>{{ train_form.class_weight.description }}</small>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          <div class="form-check">
+            {{ train_form.only_head(class="form-check-input") }}
+            {{ train_form.only_head.label(class="form-check-label") }}
+          </div>
+          <small>{{ train_form.only_head.description }}</small>
+        </div>
+      </fieldset>
+      <fieldset class="form-group">
+        <legend>Mlflow parameters</legend>
+        <div class="form-group">
+          {{ train_form.experiment_name.label(class="form-control-label") }}
+          {% if train_form.experiment_name.errors %}
+            {{ train_form.experiment_name(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in train_form.experiment_name.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          {% else %}
+            {{ train_form.experiment_name(class="form-control form-control-lg") }}
+            <small>{{ train_form.experiment_name.description }}</small>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          {{ train_form.run_name.label(class="form-control-label") }}
+          {% if train_form.run_name.errors %}
+            {{ train_form.run_name(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in train_form.run_name.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          {% else %}
+            {{ train_form.run_name(class="form-control form-control-lg") }}
+            <small>{{ train_form.run_name.description }}</small>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          {{ train_form.run_tags.label(class="form-control-label") }}
+          {% if train_form.run_tags.errors %}
+            {{ train_form.run_tags(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in train_form.run_tags.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          {% else %}
+            {{ train_form.run_tags(class="form-control form-control-lg") }}
+            <small>{{ train_form.run_tags.description }}</small>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          {{ train_form.run_description.label(class="form-control-label") }}
+          {% if train_form.run_description.errors %}
+            {{ train_form.run_description(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in train_form.run_description.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          {% else %}
+            {{ train_form.run_description(class="form-control form-control-lg") }}
+            <small>{{ train_form.run_description.description }}</small>
+          {% endif %}
+        </div>
+      </fieldset>
+      <div>
+        {{ train_form.submit(class="btn btn-primary") }}
+      </div>
+    </form>
   </div>
   <div>
     <h1>Log existing model</h1>
