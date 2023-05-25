@@ -217,6 +217,13 @@
           </div>
           <small>{{ train_form.only_head.description }}</small>
         </div>
+        <div class="form-group">
+          <div class="form-check">
+            {{ train_form.evaluate(class="form-check-input") }}
+            {{ train_form.evaluate.label(class="form-check-label") }}
+          </div>
+          <small>{{ train_form.evaluate.description }}</small>
+        </div>
       </fieldset>
       <fieldset class="form-group">
         <legend>Mlflow parameters</legend>

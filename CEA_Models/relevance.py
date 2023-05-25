@@ -460,5 +460,5 @@ if __name__ == '__main__':
 
     logged_model = f'runs:/{run.mlf_run.info.run_id}/model'
     loaded_model = mlflow.pyfunc.load_model(logged_model)
-    preds = loaded_model.predict(['Ecology! Eco-innovation.', 'hkhkhkhlkhlhlkh jbjjk'])
+    preds = loaded_model.predict(['Ecologie! Eco-innovation.', 'Tartiflette et pédalo'])
     print(preds)

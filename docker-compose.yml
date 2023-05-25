@@ -16,6 +16,8 @@ services:
       - traefik_netwk
     build: ./CEA_Flask
     working_dir: /home/app/ihm
+    volumes:
+      - mlflow:/mlflow
     # Dummy port if EXPOSE_PORT is not set
     ports:
       - "${EXPOSE_PORT:-65535:65535}"
@@ -82,7 +84,7 @@ services:
       - traefik_netwk
     image: ghcr.io/mlflow/mlflow:v2.3.2
     volumes:
-      - mlflow:/data
+      - mlflow:/mlflow
     environment:
       - MLFLOW_TRACKING_URI=http://localhost:5001
     ports:
@@ -107,7 +109,7 @@ services:
       # HuggingFace cache on volume to avoid always re-downloading models and re-building datasets
       - TRANSFORMERS_CACHE=/data/hfcache
     volumes:
-      - mlflow:/data
+      - mlflow:/mlflow
     build: ./CEA_Models
     working_dir: /app
     command: "python api.py"
