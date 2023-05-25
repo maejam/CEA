@@ -101,7 +101,11 @@ def stats():
     # Top contributors
     contribs = docs.value_counts("author")
     contribs = contribs.reset_index()
-    fig = px.bar(contribs, x="count", y="author", labels={"count": "Number of documents"}, color_discrete_sequence =["#1cc88a"], orientation="h")
+    #Keep top 5 contributors
+    contribs = contribs[:10]
+    #fig = px.bar(contribs, x="count", y="author", labels={"count": "Number of documents"}, color_discrete_sequence =["#1cc88a"], orientation="h")
+    # Do the same but in revers order
+    fig = px.bar(contribs[::-1], x="count", y="author", labels={"count": "Number of documents"}, color_discrete_sequence =["#1cc88a"], orientation="h")
 
     # fig["layout"]["yaxis"]["autorange"] = "reversed"
     fig["layout"]["yaxis"]["range"] = [0, 9]

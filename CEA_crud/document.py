@@ -3,8 +3,11 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 from pydantic import BaseModel
 import datetime
-# Define or import List, Dict, and Union
 from typing import List, Dict, Union
+import logging
+from typing import Optional
+
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
 app = FastAPI()
 
@@ -13,18 +16,18 @@ db = client["CEA"]
 document_collection = db["Document"]
 
 class Document(BaseModel):
-    url: str
+    url: Optional[str] = None
     content: str
-    links: List[str]
+    links: Optional[List[str]] = None
     author: str
     date: str
-    img: List[str]
-    comments: List[str]
-    note: int
-    doc_id: int
-    DistilbertForClassification_v1: float
-    notes: Dict[str, Union[int, float]]
-    _class_id: str
+    img: Optional[List[str]] = None
+    comments: Optional[List[str]] = None
+    note: Optional[int] = None
+    doc_id: Optional[int] = None
+    DistilbertForClassification_v1: Optional[float] = None
+    notes: Optional[Dict[str, Union[int, float]]] = None
+    _class_id: Optional[str] = None
 
 class DocumentInDB(Document):
     id: str
@@ -63,4 +66,37 @@ def delete_document(document_id: str):
 def bulk_insert_documents(documents: List[Document]):
     docs = [doc.dict() for doc in documents]
     result = document_collection.insert_many(docs)
+    return {"inserted_ids": [str(id) for id in result.inserted_ids]}
+
+from fastapi import FastAPI, Body
+from typing import List, Dict
+
+@app.post("/document/bulk_linkedin/")
+def bulk_insert_linkedin_documents(documents: List[Dict] = Body(...)):
+    docs = [doc for doc in documents]
+    docs_to_insert = []
+    current_date = datetime.datetime.now().strftime("%Y-%m-%d")
+    for doc in docs:
+        #Create a new empty document, of type Document, with only mandatory fields
+        #content, author and date
+        mydoc =  {}
+        mydoc["content"] = doc["content"]
+        mydoc["author"] = doc["author"]
+        mydoc["date"] = current_date
+
+        mydoc["url"] = "https://www.linkedin.com/feed/update/urn:li:activity:" + doc["postID"]
+        mydoc["notes"] = {"label":0}
+        mydoc["_class_id"] = "Document.LinkedIn"
+        logging.info(mydoc["url"])
+        if document_collection.find_one({"url": {"$regex": "^" + mydoc["url"]}}):
+            logging.info("Document already in the db")
+        else:
+            doc["_class_id"] = "Document.LinkedIn"
+            logging.info("--------------------")
+            logging.info(mydoc)
+            logging.info("--------------------")
+            logging.info("Document not in the db")
+            docs_to_insert.append(mydoc)
+    result = document_collection.insert_many(docs_to_insert)
+    #return {"status": "not implemented"}
     return {"inserted_ids": [str(id) for id in result.inserted_ids]}
