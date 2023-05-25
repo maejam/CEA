@@ -14,7 +14,7 @@ class User(bn.Document, UserMixin):
     email: bn.Indexed(str, unique=True)
     password: str
     created: datetime.datetime = datetime.datetime.utcnow()
-    is_admin: bool = True
+    is_admin: bool = False
 
     def get_reset_token(self, expires_seconds=1800):
         token = jwt.encode(
@@ -53,6 +53,7 @@ class Document(bn.Document):
     url: Optional[str] = None
     # Ajouter la date en optionnel
     date: Optional[str] = None
+    note: Optional[int] = None
     inserted: datetime.datetime = datetime.datetime.utcnow()
 
     class Settings:
@@ -75,3 +76,4 @@ class DocumentShortView(BaseModel):
     content: constr(curtail_length=100) = ""
     url: Optional[str] = None
     date: Optional[str] = None
+    note: Optional[int] = None

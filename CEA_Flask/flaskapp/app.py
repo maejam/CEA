@@ -12,9 +12,12 @@ main = Blueprint("main", __name__)
 @main.route("/home")
 @login_required
 def home():
+    #//TODO : Find a more efficient way to filter documents
     documents = Document.find(with_children=True).project(DocumentShortView)
-    headers = ("", "Type", "Author", "Content", "Date")
-    return render_template("home.html", title="Documents", headers=headers, data=documents)
+    # modify to get only document with content that is not empty
+    filtered_documents = [doc for doc in documents if doc.content and doc.author]
+    headers = ("", "Type", "Author", "Content", "Date","Note")
+    return render_template("home.html", title="Documents", headers=headers, data=filtered_documents)
 
 
 @main.route("/document/<string:doc_id>")

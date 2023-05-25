@@ -16,15 +16,15 @@
   <li class="nav-item">
     <a class="nav-link" href="{{ url_for('main.home') }}">
       <i class="fas fa-fw fa-search"></i>
-      <span>Recherche</span>
+      <span>Search</span>
     </a>
   </li>
-
+{% if not current_user.is_authenticated %}
   <!-- Nav Item - Inscription -->
   <li class="nav-item">
     <a class="nav-link" href="{{ url_for('auth.register') }}">
       <i class="fas fa-fw fa-user-plus"></i>
-      <span>Inscription</span>
+      <span>Register</span>
     </a>
   </li>
 
@@ -32,25 +32,46 @@
   <li class="nav-item">
     <a class="nav-link" href="{{ url_for('auth.login') }}">
       <i class="fas fa-fw fa-sign-in-alt"></i>
-      <span>Connexion</span>
+      <span>Login</span>
     </a>
   </li>
+      {% endif %}
 
+      {% if current_user and current_user.is_authenticated %}
   <!-- Nav Item - Déconnexion -->
   <li class="nav-item">
     <a class="nav-link" href="{{ url_for('auth.logout') }}">
       <i class="fas fa-fw fa-sign-out-alt"></i>
-      <span>Déconnexion</span>
+      <span>Logout</span>
     </a>
   </li>
+
 
   <!-- Nav Item - Compte -->
   <li class="nav-item">
     <a class="nav-link" href="{{ url_for('auth.account') }}">
       <i class="fas fa-fw fa-user"></i>
-      <span>Compte</span>
+      <span>Account</span>
     </a>
   </li>
+      {% endif %}
+ <!-- If is_admin -->
+        {% if current_user and current_user.is_authenticated and current_user.is_admin %}
+    <!-- Nav Item - Admin models -->
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('admin.models_admin') }}">
+            <i class="fas fa-certificate"></i>
+
+            <span>Admin models</span>
+        </a>
+    </li>
+        <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('admin.stats') }}">
+            <i class="fas fa-fw fa-chart-area"></i>
+            <span>Stats</span>
+        </a>
+        </li>
+        {% endif %}
 
   <!-- Divider -->
   <hr class="sidebar-divider d-none d-md-block">

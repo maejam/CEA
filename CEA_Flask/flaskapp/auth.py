@@ -50,7 +50,8 @@ def login():
 
         else:
             flash("Login unsuccessful. Please check your email and password.", "danger")
-
+    #User is stored in session by Flask-Login
+    #To access user.username in template, user : current_user.username
     return render_template("login.html", title="Login", form=form)
 
 

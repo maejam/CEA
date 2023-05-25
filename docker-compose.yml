@@ -60,6 +60,8 @@ services:
     volumes:
       - mongo_configdb:/data/configdb
       - mongo_db:/data/db
+    ports:
+      - "27017:27017"
     expose:
       - "27017"
     # option de redémarrage si le container plante
@@ -111,4 +113,15 @@ services:
     command: "python api.py"
     # option de redémarrage si le container plante
     restart: unless-stopped
+
+  crud_api:
+    networks:
+      - traefik_netwk
+    build: ./CEA_crud
+    working_dir: /app
+    restart: always
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongo
 
