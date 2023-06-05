@@ -1,8 +1,8 @@
 const fs = require('fs');
 
 //Add your credentials here
-login('tictacd1@gmail.com', '(c)kKmRmJPYr+C2')
-
+/* login('tictacd1@gmail.com', '(c)kKmRmJPYr+C2')
+ */
 async function login(username, password) {
     const jSessionID = await getJSessionID()
     const li_at = await getLiAt(jSessionID, username, password);
@@ -67,3 +67,5 @@ async function getLiAt(JSessionID, username, password) {
         console.log('Login failed. Please check if you need to resolve a captcha.')
     }
 }
+
+module.exports = login;
