@@ -18,7 +18,7 @@
                   <a href="{{ row.url }}" target="_blank">
                     <img src="{{ url_for('static', filename='img/linkedin.png') }}" alt="LinkedIn" width="15" height="15"/>
                   </a>
-                </td>
+              </td>
               <td>{{ row.class_id }}</td>
               <td>{{ row.author }}</td>
               <td>
@@ -27,7 +27,10 @@
                   </a>
               </td>
               <td>{{ row.date }}</td>
-                <td>{{ row.note }}</td>
+              <td>
+                  <meter id="score" value="{{ row.prediction }}" min="0" max="100">{{ row.prediction }}</meter>
+                  <span>{{ row.prediction }}</span>
+              </td>
             </tr>
 
       {% endfor %}

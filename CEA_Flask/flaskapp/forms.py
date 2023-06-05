@@ -1,9 +1,27 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField
+from wtforms.validators import Optional, DataRequired, Length, Email, EqualTo, ValidationError, NumberRange
 from flask_login import current_user
 
 from .models import User
+
+
+class RatingForm(FlaskForm):
+    rating = IntegerField(
+            "Rating",
+            validators=[NumberRange(min=1, max=4)],
+            description="Rate this document from 1 (best) to 4 (worst)."
+            )
+    rate = SubmitField("RATE")
+
+
+class SummaryForm(FlaskForm):
+    max_words = IntegerField(
+            "Maximum number of words:",
+            validators=[Optional(), NumberRange(min=30, max=1000)],
+            render_kw={"placeholder": 500},
+            )
+    summarize = SubmitField("SUMMARIZE")
 
 
 class RegistrationForm(FlaskForm):

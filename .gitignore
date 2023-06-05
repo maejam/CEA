@@ -2,3 +2,5 @@
 venv/
 **/.idea/**
 *.h5
+CEA_Models/.tmp
+CEA_Models/mlruns

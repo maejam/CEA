@@ -1,11 +1,11 @@
 import datetime
-from typing import Optional
+import time
+from typing import Optional, List, Any
 
 import jwt
 from flask import current_app
 from flask_login import UserMixin
-from pydantic import BaseModel, Field, constr
-
+from pydantic import BaseModel, Field, constr, validator
 import bunnet as bn
 
 
@@ -42,25 +42,29 @@ class User(bn.Document, UserMixin):
         return User.get(data.get("user_id")).run()
 
 
-class Author(BaseModel):
-    first_name: str
-    last_name: str
+class Prediction(BaseModel):
+    inserted = time.time()
+    run_id: str
+    prediction: List
 
 
 class Document(bn.Document):
-    author: str = ""
-    content: str = ""
+    author: str = None
+    content: str = None
     url: Optional[str] = None
-    # Ajouter la date en optionnel
     date: Optional[str] = None
     note: Optional[int] = None
-    inserted: datetime.datetime = datetime.datetime.utcnow()
+    predictions: List[Prediction] = None
+    inserted = time.time()
+
+    class Config:
+        extra = "allow"
 
     class Settings:
         is_root = True
 
     def as_dict(self):
-        return {"source": self.__class__.__name__, "author": self.author, "content": self.content, "url": self.url, "date": self.date, "inserted": self.inserted}
+        return {"source": self.__class__.__name__, "author": self.author, "content": self.content, "note": self.note, "url": self.url, "date": self.date, "inserted": self.inserted, "predictions": self.predictions}
 
 
 class LinkedIn(Document):
@@ -76,4 +80,22 @@ class DocumentShortView(BaseModel):
     content: constr(curtail_length=100) = ""
     url: Optional[str] = None
     date: Optional[str] = None
-    note: Optional[int] = None
+    prediction: Optional[float] = None
+
+    @validator("prediction")
+    def round_prediction(cls, pred):
+        if pred is None:
+            return 0.0
+        else:
+            return round(pred*100, 1)
+
+    def as_dict(self):
+        return {"id": self.id, "class_id": self.class_id, "author": self.author, "content": self.content, "url": self.url, "date": self.date, "prediction": self.prediction}
+
+
+class DocumentForModelsView(BaseModel):
+    content: str
+    note: Optional[int]
+    def as_dict(self):
+        return {"content": self.content, "note": self.note}
+

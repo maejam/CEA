@@ -4,6 +4,7 @@
 - CEA_linkedin_scrap : Recuperation posts  
 - Scrapping_Google_Scholar : Recuperation posts Google scholar
 - CEA_crud : une proposition de service rest api pour les user et les documents
+- CEA_models: permet d'entrainer un nouveau modèle, d'enregistrer un modèle déjà entrainé, et de déclencher les prédictions
 
 ###  Lancement de l'application
 Pour lancer l'appli:

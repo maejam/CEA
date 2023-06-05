@@ -33,7 +33,7 @@ class DocumentRelevanceRun:
     tags: List[str] = None
     description: str = None
 
-    tmp_directory = '.tmp'
+    tmp_directory = '.temp'
 
     def __post_init__(self):
         if self.labels != 2 and self.labels != 4:
@@ -80,21 +80,26 @@ class DocumentRelevanceRun:
         self.test_dataset = self.preprocessor.build_tf_dataset(self.dataset['test'], self.hf_tokenizer, self.trainer.batch_size, shuffle=False)
 
         # Compute class weights
+        if type(self.trainer.class_weight) == dict:
+            self.trainer.class_weight = {int(k): v for k, v in self.trainer.class_weight.items()}
         class_wts = compute_class_weight(self.trainer.class_weight, classes=np.unique(self.dataset["train"]["grade"]), y=self.dataset["train"]["grade"])
         weights = {class_id: nb for class_id, nb in zip(list(np.unique(self.dataset["train"]["grade"])), list(class_wts))}
 
         # Build parameters dictionnary
-        params = {}
+        params = {'inverse_labels': self.inverse_labels}
         for field in fields(self.trainer):
             params[field.name] = getattr(self.trainer, field.name)
 
         # Fit and log model
-        tracker = EmissionsTracker(log_level='warning', output_dir=self.tmp_directory, on_csv_write='update', save_to_logger=True)
+        artifacts_path = os.path.join(self.tmp_directory, 'artifacts')
+        os.makedirs(artifacts_path, exist_ok=True)
+        tracker = EmissionsTracker(log_level='warning', save_to_file=True, output_dir=artifacts_path, on_csv_write='update')
         with mlflow.start_run(run_name=self.name, tags=self.tags, description=self.description) as mlf_run:
             tracker.start()
             self.trainer.fit(self.train_dataset, self.test_dataset, self.model_type, self.labels, weights, self.name, self.tags, self.description, model_tmp_path)
             tracker.stop()
             self.logger.log_model('model')
+            self.logger.log_all_artifacts(artifacts_path)
             self.logger.log_params(params)
         self.mlf_run = mlf_run
 
@@ -108,7 +113,7 @@ class DocumentRelevanceRun:
             --- tf_model.h5
             --- config.json
             -- artifacts
-            --- all files in ths subfolder will be logged as mlflow artifacts.
+            --- all files in this subfolder will be logged as mlflow artifacts.
 
         base_ckpt: Used to build the tokenizer. Can be a checkpoint identifier on HuggingFace or a directory
             containing the custom tokenizer files.
@@ -142,13 +147,20 @@ class DocumentRelevanceRun:
         self.dataset = self.tokenizer.tokenize(self.dataset)
         self.test_dataset = self.preprocessor.build_tf_dataset(self.dataset['test'], self.hf_tokenizer, batch_size, shuffle=False)
 
+        # Build parameters dictionnary
+        parameters.update({
+                        'inverse_labels': self.inverse_labels,
+            'checkpoint': base_ckpt,
+            'test_size': test_size,
+            'batch_size': batch_size})
+
         with mlflow.start_run(run_name=self.name, tags=self.tags, description=self.description) as mlf_run:
             self.logger.log_model('model')
             self.logger.log_params(parameters)
             self.logger.log_all_artifacts(os.path.join(self.tmp_directory, 'artifacts'))
         self.mlf_run = mlf_run
 
-    def evaluate(self, parameters: Dict = {}):
+    def evaluate(self, parameters: Dict = {}, only_head=False):
         # Load model
         model_path = os.path.join(self.mlf_run.info.artifact_uri, 'model/artifacts/')
         model_path = unquote(urlparse(model_path).path)
@@ -202,6 +214,9 @@ class DocumentRelevanceRun:
         os.makedirs(self.tmp_directory)
 
         # Model summary
+        if only_head:
+            for layer in self.model.layers:
+                if not 'classifier' in layer.name: layer.trainable = False
         with open(os.path.join(self.tmp_directory, 'summary.txt'), 'w') as f:
             with contextlib.redirect_stdout(f):
                 self.model.summary()
@@ -216,11 +231,12 @@ class DocumentRelevanceRun:
         plt.savefig(confpath)
         # Errors
         dataset = self.dataset['test']
+        cols_to_keep = ['author', 'content', 'grade', 'input_ids']
+        dataset = dataset.remove_columns(set(dataset.column_names) - set(cols_to_keep))
         def compute_len(doc):
             return {'document length (tokens)': len(doc['input_ids'])-self.hf_tokenizer.num_special_tokens_to_add()}
         dataset = dataset.map(compute_len)
-        # dataset = dataset.add_column(name='Document length (tokens)', column=dataset.map(compute_len))
-        dataset = dataset.remove_columns(['doc_id', 'input_ids', 'attention_mask'])
+        dataset = dataset.remove_columns(['input_ids'])
         dataset = dataset.rename_column('grade', 'true_value')
         dataset = dataset.add_column(name='prediction', column=predictions)
         errors = abs(true_values-predictions)
@@ -283,7 +299,7 @@ class DocumentRelevanceTrainer:
 
         if self.train_only_head:
             for layer in model.layers:
-                if not "classifier" in layer.name: layer.trainable = False
+                if not 'classifier' in layer.name: layer.trainable = False
 
         model.compile(
                 optimizer=optimizer,
@@ -426,16 +442,16 @@ class Logger:
     def log_metrics(self, metrics: Dict):
         mlflow.log_metrics(metrics)
 
-    def log_all_artifacts(self, dir):
-        mlflow.log_artifacts(dir)
+    def log_all_artifacts(self, path):
+        mlflow.log_artifacts(path)
 
 
 if __name__ == '__main__':
     run = DocumentRelevanceRun(
             model_type='classifier',
-            data='CFR2122/artifacts/data/LinkedInPosts_20220521_2.csv',
+            data='CFR2122/LinkedInPosts_20220521_2.csv',
             label_col='note',
-            labels=4)
+            labels=2)
     trainer = DocumentRelevanceTrainer(
             train_size=10,
             test_size=30,
@@ -451,14 +467,16 @@ if __name__ == '__main__':
             labels=2,
             inverse_labels=True,
             name='cfr2122')
-    run.log_existing_checkpoint('CFR2122',
-            parameters={'initial_lr': 'hfbfuzb'},
-            )
+
+    run.train_new_checkpoint(trainer)
+    # run.log_existing_checkpoint('CFR2122',
+    #         parameters={'initial_lr': 'hfbfuzb'},)
+
 
     run.evaluate()
 
 
-    logged_model = f'runs:/{run.mlf_run.info.run_id}/model'
-    loaded_model = mlflow.pyfunc.load_model(logged_model)
-    preds = loaded_model.predict(['Ecologie! Eco-innovation.', 'Tartiflette et pédalo'])
-    print(preds)
+    # logged_model = f'runs:/{run.mlf_run.info.run_id}/model'
+    # loaded_model = mlflow.pyfunc.load_model(logged_model)
+    # preds = loaded_model.predict(['Ecologie! Eco-innovation.', 'Tartiflette et pédalo'])
+    # print(preds)

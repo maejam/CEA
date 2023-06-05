@@ -7,4 +7,4 @@ def build_model(model='t5-small'):
     return summarizer
 
 def predict(summarizer, text: Union[str, List[str]], min_length=30, max_length=300):
-    return summarizer(text, min_length=30, max_length=300)
+    return summarizer(text, min_length=min_length, max_length=max_length)

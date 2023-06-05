@@ -2,15 +2,83 @@
 
 
 {% block content %}
-  <h1>{{ document.author }}</h1>
-     <button class="btn btn-primary" onclick="goBack()">Retour</button>
-  <hr>
-  <div>
+  <div class="container-fluid">
+    <h1>{{ document.author }}</h1>
+    <button class="btn btn-primary" onclick="goBack()">Retour</button>
+    <hr>
+    <div class="text-justify">
       {{ document.content }}
-  </div>
+    </div>
+    <hr>
+    <div class="row">
+      <div class="col-lg-2 mt-4">
+        <div class="card shadow mb-4">
+          <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">{{ rating_form.rating.label() }}</h6>
+          </div>
+          <div class="card-body">
+            <form class="form-inline" method="POST" action="">
+              {{ rating_form.hidden_tag() }}
+              <div class="form-group">
+                {% if rating_form.rating.errors %}
+                  <span>{{ rating_form.rating(class="is-invalid col-sm-3 mb-3 mb-sm-0") }} {{ rating_form.rate(class="btn-sm btn-primary") }}</span>
+                  <div class="invalid-feedback">
+                    {% for error in rating_form.rating.errors %}
+                      <span>{{ error }}</span>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  <span>{{ rating_form.rating(class="col-sm-3 mb-3 mb-sm-0") }} {{ rating_form.rate(class="btn-sm btn-primary") }}</span>
+                {% endif %}
+              </div>
+              <small>{{ rating_form.rating.description }}</small>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-10 mt-4">
+        <div class="card shadow mb-4">
+          <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Summary</h6>
+          </div>
+          <div class="card-body">
+            <form class="form-inline" method="POST" action="">
+              {{ summary_form.hidden_tag() }}
+              <div class="form-group">
+                {{ summary_form.max_words.label(class="form-control-label") }}
+                {% if summary_form.max_words.errors %}
+                  <span>{{ summary_form.max_words(class="is-invalid col-sm-3 mb-3 mb-sm-0 ml-2") }} {{ summary_form.summarize(class="btn-sm btn-primary") }}</span>
+                  <div class="invalid-feedback">
+                    {% for error in summary_form.max_words.errors %}
+                      <span>{{ error }}</span>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  <span>{{ summary_form.max_words(class="col-sm-3 mb-3 mb-sm-0 ml-2") }} {{ summary_form.summarize(class="btn-sm btn-primary") }}</span>
+                {% endif %}
+              </div>
+              <small>{{ summary_form.max_words.description }}</small>
+            </form>
+            <div>
+              {% if summary %}
+                <hr>
+                <div>
+                  {{ summary }}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div> 
+      </div>
+    </div>
+  </div>    
+
+{% endblock content %}
+
+{% block scripts %}
     <script>
         function goBack() {
             window.history.back(); // Retourne à la page précédente
         }
     </script>
-{% endblock content %}
+{% endblock scripts %}

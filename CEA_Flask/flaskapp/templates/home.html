@@ -17,8 +17,25 @@
 
   <script>
     $(document).ready(function () {
-      $('#data').DataTable();
+        $('#data').DataTable({
+            "columns": [
+                {"orderable": false, "searchable": false},
+                {"searchable": false},
+                null,
+                null,
+                null,
+                {"searchable": false}
+            ],
+        });
+
     });
+
+    var data = {{ data| safe }};
+    for (var p in data[0]) {
+    if (data[0].hasOwnProperty(p)) {
+        alert(p + ': ' + data[0].p);
+    }
+} 
   </script> 
 
 {% endblock scripts %}

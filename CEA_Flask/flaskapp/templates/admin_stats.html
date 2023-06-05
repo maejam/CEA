@@ -59,7 +59,7 @@
                           <div class="row no-gutters align-items-center">
                               <div class="col-auto">
                                   <div class="h4 mb-0 mr-3 font-weight-bold text-gray-800">
-                                      908<br>
+                                      {{ note_count }}<br>
                                   </div>
                               </div>
                           </div>
@@ -70,7 +70,7 @@
                   </div>
                   <div class="row no-gutters align-items-center">
                       <div class="col mr-2">
-                        <small>33.28%</small><br>
+                          <small>{{ pc_note }} %</small><br>
                         <div class="progress progress-sm mr-2">
                           <div class="progress-bar bg-info" role="progressbar" style="width: 33.28%" aria-valuenow="33.28" aria-valuemin="0" aria-valuemax="100">
                           </div>
@@ -117,73 +117,50 @@
     </div>
 
     <div class="row">
-        <!-- Content Column -->
+        <!-- Histos -->
         <div class="col-lg-6 mb-4">
-            <!-- Illustrations -->
+            <!-- grades -->
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Illustrations</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">Grades distribution</h6>
                 </div>
                 <div class="card-body">
-                    <div class="text-center">
-                        <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 25rem;" src="img/undraw_posting_photo.svg" alt="...">
-                    </div>
-                    <p>Add some quality, svg illustrations to your project courtesy of <a target="_blank" rel="nofollow" href="https://undraw.co/">unDraw</a>, a
-                        constantly updated collection of beautiful svg images that you can use
-                        completely free and without attribution!</p>
-                    <a target="_blank" rel="nofollow" href="https://undraw.co/">Browse Illustrations on
-                        unDraw →</a>
+                  <div id="grades_histo"></div>
                 </div>
             </div>
 
-            <!-- Approach -->
+            <!-- Predictions -->
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Development Approach</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">Predictions distribution</h6>
                 </div>
                 <div class="card-body">
-                    <p>SB Admin 2 makes extensive use of Bootstrap 4 utility classes in order to reduce
-                        CSS bloat and poor page performance. Custom CSS classes are used to create
-                        custom components and custom utility classes.</p>
-                    <p class="mb-0">Before working with this theme, you should become familiar with the
-                        Bootstrap framework, especially the utility classes.</p>
+                  <div id="preds_histo"></div>
                 </div>
             </div>
         </div>
 
         <div class="col-lg-6 mb-4">
 
-            <!-- Illustrations -->
+            <!-- Best grade authors -->
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Illustrations</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">Highest rated authors (top contributors only)</h6>
                 </div>
                 <div class="card-body">
-                    <div class="text-center">
-                        <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 25rem;" src="img/undraw_posting_photo.svg" alt="...">
-                    </div>
-                    <p>Add some quality, svg illustrations to your project courtesy of <a target="_blank" rel="nofollow" href="https://undraw.co/">unDraw</a>, a
-                        constantly updated collection of beautiful svg images that you can use
-                        completely free and without attribution!</p>
-                    <a target="_blank" rel="nofollow" href="https://undraw.co/">Browse Illustrations on
-                        unDraw →</a>
+                    <div id="best_grade_auth"></div>
                 </div>
             </div>
 
-            <!-- Approach -->
+            <!-- Best pred authors -->
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Development Approach</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">Highest predictions (top contributors only)</h6>
                 </div>
                 <div class="card-body">
-                    <p>SB Admin 2 makes extensive use of Bootstrap 4 utility classes in order to reduce
-                        CSS bloat and poor page performance. Custom CSS classes are used to create
-                        custom components and custom utility classes.</p>
-                    <p class="mb-0">Before working with this theme, you should become familiar with the
-                        Bootstrap framework, especially the utility classes.</p>
+                    <div id="best_pred_auth"></div>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -200,6 +177,14 @@
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <script type="text/javascript">
     var graph1 = {{contributors | safe}};
+    var graph2 = {{grades_histo | safe}};
+    var graph3 = {{preds_histo | safe}};
+    var graph4 = {{best_grade_auth | safe}};
+    var graph5 = {{best_pred_auth | safe}};
     Plotly.plot("contributors", graph1, {});
+    Plotly.plot("grades_histo", graph2, {});
+    Plotly.plot("preds_histo", graph3, {});
+    Plotly.plot("best_grade_auth", graph4, {});
+    Plotly.plot("best_pred_auth", graph5, {});
   </script>
 {% endblock scripts %}
