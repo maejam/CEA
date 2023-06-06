@@ -25,10 +25,22 @@ docker compose -f docker-compose.yml --env-file dev.env.local up --build
 </pre>
 Et acceder à l'appli sur http://localhost:5000
 
-### Acces services
+### Gestion des utilisateurs et des documents via API REST / Swagger UI
 Swagger UI  
 http://localhost:8000/user/docs    
-http://localhost:8000/document/docs  (en cours de dev) 
+http://localhost:8000/document/docs
+
+(Remplacer localhost par le nom du serveur si besoin)
+
+### Declencher le  scrapping google scholar via API REST / Swagger UI
+
+http://localhost:8001/docs#/default/insert_GoogleScholar_insert__keyword__get
+
+(Remplacer localhost par le nom du serveur si besoin)
+
+### Etiquetage de données a partir du modele
+
+[CEA_models/README.md](CEA_models/README.md)
 
 ### User admin
 Ceci est une solution temporaire pour administrer l'application.   

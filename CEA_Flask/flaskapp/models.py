@@ -70,6 +70,8 @@ class Document(bn.Document):
 class LinkedIn(Document):
     pass
 
+class Gscholar(Document):
+    pass
 
 # Permet de selectionner les champs à afficher
 class DocumentShortView(BaseModel):

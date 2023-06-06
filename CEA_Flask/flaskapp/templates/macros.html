@@ -16,7 +16,12 @@
            <tr>
               <td>
                   <a href="{{ row.url }}" target="_blank">
-                    <img src="{{ url_for('static', filename='img/linkedin.png') }}" alt="LinkedIn" width="15" height="15"/>
+                    <!-- if row.class_id == Document.LinkedIn -->
+                    {% if row.class_id == 'Document.LinkedIn' %}
+                    	<img src="{{ url_for('static', filename='img/linkedin.png') }}" alt="LinkedIn" width="15" height="15"/>
+                    {% elif row.class_id == 'Document.Gscholar' %}
+                        <img src="{{ url_for('static', filename='img/gscholar.png') }}" alt="LinkedIn" width="15" height="15"/>
+                    {% endif %}
                   </a>
               </td>
               <td>{{ row.class_id }}</td>

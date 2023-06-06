@@ -9,4 +9,4 @@ conda create --name CEA_crud python=3.9
 conda activate CEA_crud
 pip install -r requirements.txt
 
-uvicorn main:app --host 0.0.0.0 --port 8001 --reload
+uvicorn main:app --host 0.0.0.0 --port 8009 --reload
