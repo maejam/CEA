@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const port = 3000;
+const port = 8002;
 const login = require("./login");
 
 const fs = require("fs");
@@ -8,25 +8,47 @@ var savedCookies = require("./saved-cookie.json");
 app.get("/scrap", async (req, res) => {
   const response = await scrap();
   if (response) {
+    bulkSave(response)
     res.send(response);
   } else {
     //refresh cookie
     await login("tictacd1@gmail.com", "(c)kKmRmJPYr+C2");
     const response2 = await scrap();
     if (response2) {
-      res.send(response);
+      bulkSave(response2)
+      res.send(response2);
     } else {
       res.status(404).send("Scrapping failed");
     }
   }
 });
 app.get("/", async (req, res) => {
-  res.send("CEA LinkedIn listening at http://localhost:300");
+  res.send("CEA LinkedIn listening at http://localhost:8002");
 });
 
 app.listen(port, () => {
   console.log(`CEA LinkedIn listening at http://localhost:${port}`);
 });
+
+async function bulkSave(response){
+    let finalPosts = response.influencersPosts.concat(response.influencersPosts)
+    let config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: 'http://localhost:8000/document/bulk_linkedin/',
+      headers: { 
+        'Content-Type': 'text/plain'
+      },
+      data : JSON.stringify(finalPosts)
+    };
+    axios.request(config)
+    .then((response) => {
+      console.log(JSON.stringify(response.data));
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
 
 async function scrap() {
   const key_words = [
