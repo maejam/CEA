@@ -38,6 +38,12 @@ http://localhost:8001/docs#/default/insert_GoogleScholar_insert__keyword__get
 
 (Remplacer localhost par le nom du serveur si besoin)
 
+### Declencher le  scrapping linkedin via API REST / Swagger UI
+
+http://localhost:8002/api-docs
+
+(Remplacer localhost par le nom du serveur si besoin)
+
 ### Etiquetage de données a partir du modele
 
 [CEA_models/README.md](CEA_models/README.md)

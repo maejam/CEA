@@ -1,64 +1,174 @@
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsdoc = require("swagger-jsdoc");
+const process = require("process");
+
+const swaggerOptions = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "API",
+      version: "1.0.0",
+      description: "API description",
+    },
+  },
+  apis: ["./index.js"], 
+};
+
+const swaggerSpecs = swaggerJsdoc(swaggerOptions);
+
+const axios = require("axios");
 const express = require("express");
 const app = express();
-const port = 8002;
+//Si sous windows = mode dev, port = 8007
+//Si sous linux (docker) = mode prod, port = 8002
+const port = process.platform === "win32" ? 8007 : 8002;
+
 const login = require("./login");
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
 const fs = require("fs");
 var savedCookies = require("./saved-cookie.json");
+
+/**
+ * @swagger
+ * /scrap:
+ *   get:
+ *     summary: Récupère les données
+ *     parameters:
+ *       - in: query
+ *         name: keywords
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: string
+ *         required: true
+ *         example: ["eco-design electronics", "ecoinnovation electronics technology semi-conductor", "climate change semi-conductor",    "climate change electronics technology ", "change innovation electronics technology", "sustainability electronics technology"]
+ *     responses:
+ *       200:
+ *         description: Les données ont été récupérées avec succès
+ *       404:
+ *         description: Échec de la récupération des données
+ */
+
+const do_debug = false;
+
 app.get("/scrap", async (req, res) => {
-  const response = await scrap();
-  if (response) {
-    bulkSave(response)
-    res.send(response);
-  } else {
-    //refresh cookie
-    await login("tictacd1@gmail.com", "(c)kKmRmJPYr+C2");
-    const response2 = await scrap();
-    if (response2) {
-      bulkSave(response2)
+  try {
+    const keywords = req.query.keywords;
+    if (!keywords || !Array.isArray(keywords)) {
+      res.status(400).send("Paramètre 'keywords' invalide ou manquant");
+      return;
+    }
+
+    let response;
+    if (!do_debug) {
+      // Effectuer un appel à scrap
+      response = await scrap(keywords);
+      // Sauvegarder le contenu de response dans response.txt
+      //fs.writeFileSync("response.txt", JSON.stringify(response));
+    } else {
+      // Charger le contenu de response.txt
+      const data = fs.readFileSync("response.txt", "utf-8");
+      response = JSON.parse(data);
+    }
+    if (response) {
+      //bulkSave(response);
+      response2 = await bulkSave(response);
+      // log response2 to console
+      console.log("Log response from crud api to console");
+      console.log(response2);      
       res.send(response2);
     } else {
-      res.status(404).send("Scrapping failed");
+      //refresh cookie
+      await login("tictacd1@gmail.com", "(c)kKmRmJPYr+C2");
+      const response2 = await scrap(keywords);
+      if (response2) {
+        //bulkSave(response2);
+        response2 = await bulkSave(response);
+        console.log("Log response from crud api to console");
+        console.log(response2);      
+        res.send(response2);
+      } else {
+        res.status(404).send("Scrapping failed");
+      }
     }
+  } catch (error) {
+    console.error("Error occurred:", error);
+    res.status(500).send("Une erreur est survenue lors du scrapping");
   }
 });
+
+
+
+/**
+ * @swagger
+ * /:
+ *   get:
+ *     summary: Récupère la page d'accueil
+ *     responses:
+ *       200:
+ *         description: La page d'accueil a été récupérée avec succès
+ */
 app.get("/", async (req, res) => {
-  res.send("CEA LinkedIn listening at http://localhost:8002");
+  res.send("CEA LinkedIn listening at http://lk_scrap:8002");
 });
 
 app.listen(port, () => {
-  console.log(`CEA LinkedIn listening at http://localhost:${port}`);
+  console.log(`CEA LinkedIn listening at http://lk_scrap:${port}`);
 });
 
-async function bulkSave(response){
-    let finalPosts = response.influencersPosts.concat(response.influencersPosts)
-    let config = {
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: 'http://localhost:8000/document/bulk_linkedin/',
-      headers: { 
-        'Content-Type': 'text/plain'
-      },
-      data : JSON.stringify(finalPosts)
-    };
-    axios.request(config)
+async function bulkSave(response) {
+  let finalPosts = response.influencersPosts.concat(response.keywordPosts);
+
+  // Afficher le contenu JSON dans la console
+  const jsonContent = JSON.stringify(finalPosts);
+  //console.log("Contenu JSON :", jsonContent);
+
+  // Sauvegarder jsonContent dans "jsoncontent.txt"
+  /*fs.writeFile('jsoncontent.txt', jsonContent, (err) => {
+    if (err) {
+      console.log('Erreur lors de la sauvegarde du fichier:', err);
+    } else {
+      console.log('Contenu JSON sauvegardé dans "jsoncontent.txt"');
+    }
+  });*/
+  //fs.writeFileSync("json_content2.txt", jsonContent);
+  // Send JSON content to crud_api
+  //crud_api_url = "http://crud_api:8000/document/document/bulk_linkedin/";
+  //Si sous windows = mode dev, port = 8009
+  //Si sous linux (docker) = mode prod, port = 8000
+  // const port_crud_api_port = process.platform === "win32" ? 8009 : 8000;
+  crud_api_url = process.platform === "win32"  ? "http://crud_api:8009/document/document/bulk_linkedin/" : "http://crud_api:8000/document/document/bulk_linkedin/";
+
+  let config = {
+    method: "post",
+    maxBodyLength: Infinity,
+    url: crud_api_url,
+    headers: {
+      "Content-Type": "application/json",
+      "accept": "application/json"
+    },
+    data: jsonContent,
+  };
+  return axios.request(config)
     .then((response) => {
-      console.log(JSON.stringify(response.data));
+      //console.log(JSON.stringify(response.data));
+      console.log("JSON content sent to crud_api");
+      console.log(response.data);
+      return response.data; 
     })
     .catch((error) => {
       console.log(error);
+      //console.log("Error while sending JSON content to crud_api");
+      return "Error while sending JSON content to crud_api - " + response.status;        
     });
 }
 
-async function scrap() {
-  const key_words = [
-    "eco-design electronics",
-    "ecoinnovation electronics technology semi-conductor",
-    "climate change semi-conductor",
-    "climate change electronics technology ",
-    "change innovation electronics technology",
-    "sustainability electronics technology",
-  ];
+async function scrap(keywords) {
+  if (!Array.isArray(keywords) || keywords.length === 0) {
+    throw new Error("Les mots-clés doivent être une liste non vide");
+  }
 
   try {
     //with saved cookie
@@ -67,12 +177,20 @@ async function scrap() {
       savedCookies.li_at,
       "0"
     );
+    // Count and log to console number of influencers posts
+    console.log("Number of influencers posts: " + influencersPosts.length);
+
     let keywordPosts = await getKeywordPost(
-      key_words[0],
+      keywords[0],
       savedCookies.jSessionID,
       savedCookies.li_at,
       "0"
     );
+    // Count and log to console number of keyword posts
+    console.log("Number of keyword posts: " + keywordPosts.length);
+    // log to console keywordPosts
+    console.log("Log keywordPosts to console");
+    console.log(keywordPosts);
 
     return { influencersPosts, keywordPosts };
   } catch (error) {
@@ -201,8 +319,10 @@ async function getKeywordPost(keyword, JSessionID, li_at, page) {
     headers: myHeaders,
     redirect: "follow",
   };
+  url_to_call_and_log = `https://www.linkedin.com/voyager/api/search/dash/clusters?decorationId=com.linkedin.voyager.dash.deco.search.SearchClusterCollection-175&origin=FACETED_SEARCH&q=all&query=(keywords:${encodedKeyword},flagshipSearchIntent:SEARCH_SRP,queryParameters:(datePosted:List(past-month),resultType:List(CONTENT)),includeFiltersInResponse:false)&start=${page}`;
+  console.log(url_to_call_and_log);
   let response = await fetch(
-    `https://www.linkedin.com/voyager/api/search/dash/clusters?decorationId=com.linkedin.voyager.dash.deco.search.SearchClusterCollection-175&origin=FACETED_SEARCH&q=all&query=(keywords:${encodedKeyword},flagshipSearchIntent:SEARCH_SRP,queryParameters:(datePosted:List(past-month),resultType:List(CONTENT)),includeFiltersInResponse:false)&start=${page}`,
+    url_to_call_and_log,
     requestOptions
   );
   console.log(response.status);

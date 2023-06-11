@@ -4,3 +4,4 @@ venv/
 *.h5
 CEA_Models/.tmp
 CEA_Models/mlruns
+CEA_linkedin_scrap/node_modules

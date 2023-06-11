@@ -44,7 +44,12 @@ def get_list_of_articles(keyword : str, api_key : str):
 
         search = GoogleSearch(params)
         results = search.get_dict()
-        final_result = results['organic_results']
+        #Check if organic_results is in results
+        if 'organic_results' in results:
+            final_result = results['organic_results']
+        else:
+            final_result = []
+            logging.warning(f"Missing key in {results}")
         # final_result is a list of dict, convert it to a json file
         # save_to_pickle_object(final_result, 'final_result.pkl', './')
     else:

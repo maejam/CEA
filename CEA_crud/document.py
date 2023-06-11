@@ -43,6 +43,13 @@ def delete_document(document_id: str):
     else:
         raise HTTPException(status_code=404, detail="Document not found")
 
+### Ajouter une route qui supprime tous les documents dans l'attribut date est un attribut donné, par exemple "2023-06-11"
+@app.delete("/document/date/{date}")
+def delete_document_date(date: str):
+    result = document_collection.delete_many({"date": date})
+    return {"detail": f"{result.deleted_count} documents deleted"}
+
+
 @app.delete("/document/bulk/")
 def bulk_delete_documents(documents: List[str]):
     result = document_collection.delete_many({"_id": {"$in": [ObjectId(id) for id in documents]}})
@@ -67,6 +74,7 @@ def bulk_insert_documents(documents: List[Dict]):
 
 @app.post("/document/bulk_linkedin/")
 def bulk_insert_linkedin_documents(documents: List[Dict] = Body(...)):
+    logging.info("/document/bulk_linkedin/")
     docs_to_insert = []
     current_date = datetime.datetime.now().strftime("%Y-%m-%d")
     for doc in documents:
@@ -78,14 +86,26 @@ def bulk_insert_linkedin_documents(documents: List[Dict] = Body(...)):
             "notes": {"label": 0},
             "_class_id": "Document.LinkedIn",
         }
-        logging.info(mydoc["url"])
+        # Affiche le contenu des attributs du doc , sauf pour contenu, ou on tronque le contenu à 10 caractères, si il en fait plus, et sinon on le laisse as is
+        logging.info("--------------------")
+        logging.info("Document to insert:")
+        for key, value in mydoc.items():
+            if key == "content":
+                logging.info(f"{key}: {value[:10]}")
+            else:
+                logging.info(f"{key}: {value}")
+
         if document_collection.find_one({"url": {"$regex": "^" + mydoc["url"]}}):
             logging.info("Document already in the db")
         else:
             logging.info("--------------------")
             logging.info(mydoc)
             logging.info("--------------------")
-            logging.info("Document not in the db")
+            logging.info("Document not in the db, append it to document to insert")
             docs_to_insert.append(mydoc)
-    result = document_collection.insert_many(docs_to_insert)
-    return {"inserted_ids": [str(id) for id in result.inserted_ids]}
+    if len(docs_to_insert) == 0:
+        return {"inserted_ids": []}
+    else:
+        result = document_collection.insert_many(docs_to_insert)
+        return {"inserted_ids": [str(id) for id in result.inserted_ids]}
+
