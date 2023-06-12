@@ -28,6 +28,14 @@ def check_is_admin():
         return False
     return True
 
+# Redirect /swaggers to template admin_swaggers.html
+@admin.route("/swaggers", methods=["GET", "POST"])
+@login_required
+def swaggers():
+    if not check_is_admin():
+        return redirect(url_for("main.home"))
+    return render_template("admin_swaggers.html", title="Swaggers")
+
 @admin.route("/models", methods=["GET", "POST"])
 @login_required
 def models_admin():

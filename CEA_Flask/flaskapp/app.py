@@ -27,7 +27,7 @@ def home():
                                 )
                         .to_list())
     documents = [doc.as_dict() for doc in documents]
-    headers = ("", "Type", "Author", "Content", "Date", "Score")
+    headers = ("", "Type", "Author", "Content", "Date", "Rating","Score")
     return render_template("home.html", title="Documents", headers=headers, data=documents)
 
 
@@ -56,3 +56,4 @@ def document(doc_id):
         if "summary" not in locals():
             summary = None
     return render_template("document.html", document=document, rating_form=rating_form, summary_form=summary_form, summary=summary)
+

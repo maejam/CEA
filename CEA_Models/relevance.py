@@ -140,6 +140,8 @@ class DocumentRelevanceRun:
 
         if not test_size:
             test_size = self.dataset.shape[0]
+        if test_size < 1:
+            test_size = int(self.dataset.shape[0] * test_size)
         self.dataset = DatasetDict({'test': self.dataset.select(range(test_size))})
         self.dataset = self.preprocessor.reduce_labels(self.dataset, self.labels)
         if self.inverse_labels:

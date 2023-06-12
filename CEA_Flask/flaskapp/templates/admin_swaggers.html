@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <!-- Add link to http://<servername>:8000/document/docs , when you click on the link it will open the document in a new tab -->
+      {% set host = request.headers.get('Host').split(':')[0] %}
+    <a href="http://{{ host }}:8000/document/docs" target="_blank">Documents Swagger</a><BR/>
+    <a href="http://{{ host }}:8000/user/docs" target="_blank">Users Swagger</a><BR/>
+    <a href="http://{{ host }}:8001/docs" target="_blank">Google Scholar Swagger</a><BR/>
+    <a href="http://{{ host }}:8002/api-docs" target="_blank">Linkedin Swagger</a><BR/>
+
+{% endblock content %}
+

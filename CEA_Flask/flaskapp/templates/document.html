@@ -21,14 +21,14 @@
               {{ rating_form.hidden_tag() }}
               <div class="form-group">
                 {% if rating_form.rating.errors %}
-                  <span>{{ rating_form.rating(class="is-invalid col-sm-3 mb-3 mb-sm-0") }} {{ rating_form.rate(class="btn-sm btn-primary") }}</span>
+                  <span>{{ rating_form.rating(class="is-invalid col-sm-5 mb-3 mb-sm-0") }} {{ rating_form.rate(class="btn-sm btn-primary") }}</span>
                   <div class="invalid-feedback">
                     {% for error in rating_form.rating.errors %}
                       <span>{{ error }}</span>
                     {% endfor %}
                   </div>
                 {% else %}
-                  <span>{{ rating_form.rating(class="col-sm-3 mb-3 mb-sm-0") }} {{ rating_form.rate(class="btn-sm btn-primary") }}</span>
+                  <span>{{ rating_form.rating(class="col-sm-5 mb-3 mb-sm-0") }} {{ rating_form.rate(class="btn-sm btn-primary") }}</span>
                 {% endif %}
               </div>
               <small>{{ rating_form.rating.description }}</small>
@@ -47,14 +47,14 @@
               <div class="form-group">
                 {{ summary_form.max_words.label(class="form-control-label") }}
                 {% if summary_form.max_words.errors %}
-                  <span>{{ summary_form.max_words(class="is-invalid col-sm-3 mb-3 mb-sm-0 ml-2") }} {{ summary_form.summarize(class="btn-sm btn-primary") }}</span>
+                  <span>{{ summary_form.max_words(class="is-invalid col-sm-5 mb-3 mb-sm-0 ml-2") }} {{ summary_form.summarize(class="btn-sm btn-primary") }}</span>
                   <div class="invalid-feedback">
                     {% for error in summary_form.max_words.errors %}
                       <span>{{ error }}</span>
                     {% endfor %}
                   </div>
                 {% else %}
-                  <span>{{ summary_form.max_words(class="col-sm-3 mb-3 mb-sm-0 ml-2") }} {{ summary_form.summarize(class="btn-sm btn-primary") }}</span>
+                  <span>{{ summary_form.max_words(class="col-sm-5 mb-3 mb-sm-0 ml-2") }} {{ summary_form.summarize(class="btn-sm btn-primary") }}</span>
                 {% endif %}
               </div>
               <small>{{ summary_form.max_words.description }}</small>

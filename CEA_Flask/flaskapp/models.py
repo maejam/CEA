@@ -81,6 +81,7 @@ class DocumentShortView(BaseModel):
     author: constr(curtail_length=25) = ""
     content: constr(curtail_length=100) = ""
     url: Optional[str] = None
+    note: Optional[int] = None
     date: Optional[str] = None
     prediction: Optional[float] = None
 
@@ -92,7 +93,7 @@ class DocumentShortView(BaseModel):
             return round(pred*100, 1)
 
     def as_dict(self):
-        return {"id": self.id, "class_id": self.class_id, "author": self.author, "content": self.content, "url": self.url, "date": self.date, "prediction": self.prediction}
+        return {"id": self.id, "class_id": self.class_id, "author": self.author, "content": self.content, "url": self.url, "date": self.date, "prediction": self.prediction, "note": self.note}
 
 
 class DocumentForModelsView(BaseModel):
