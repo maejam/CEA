@@ -1,0 +1,3 @@
+*.serpapi.com
+*.linkedin.com
+*.plot.ly
