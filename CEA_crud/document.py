@@ -109,3 +109,21 @@ def bulk_insert_linkedin_documents(documents: List[Dict] = Body(...)):
         result = document_collection.insert_many(docs_to_insert)
         return {"inserted_ids": [str(id) for id in result.inserted_ids]}
 
+# Mettre à jour la date de tous les documents qui n'ont pas le format de date "YYYY-MM-DD"
+# en utilisant la date YYYY-MM-DD passée en paramètre
+@app.put("/document/date/{date}")
+def update_document_date(date: str):
+    """
+        Mettre à jour la date de tous les documents qui n'ont pas le format de date "YYYY-MM-DD"
+        en utilisant la date YYYY-MM-DD passée en paramètre
+    """
+    if not isinstance(date, str):
+        raise HTTPException(status_code=400, detail="Date must be a string")
+    if not date:
+        raise HTTPException(status_code=400, detail="Date must not be empty")
+    if not date[0:4].isdigit() or not date[5:7].isdigit() or not date[8:10].isdigit():
+        raise HTTPException(status_code=400, detail="Date must have the format YYYY-MM-DD")
+    if len(date) != 10:
+        raise HTTPException(status_code=400, detail="Date must have the format YYYY-MM-DD")
+    result = document_collection.update_many({"date": {"$not": {"$regex": "^\d{4}-\d{2}-\d{2}$"}}}, {"$set": {"date": date}})
+    return {"detail": f"{result.modified_count} documents updated"}
