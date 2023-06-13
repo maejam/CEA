@@ -5,7 +5,7 @@ from typing import Optional, List, Any
 import jwt
 from flask import current_app
 from flask_login import UserMixin
-from pydantic import BaseModel, Field, constr, validator
+from pydantic import BaseModel, root_validator, Field, constr, validator
 import bunnet as bn
 
 
@@ -83,14 +83,22 @@ class DocumentShortView(BaseModel):
     url: Optional[str] = None
     note: Optional[int] = None
     date: Optional[str] = None
+    DistilbertForClassification_v1: Optional[float] = None
     prediction: Optional[float] = None
 
-    @validator("prediction")
-    def round_prediction(cls, pred):
-        if pred is None:
-            return 0.0
-        else:
-            return round(pred*100, 1)
+    @root_validator
+    def display_prediction(cls, values):
+        # If no prediction, display DistilbertForClassification_v1
+        if not values.get("prediction") and values.get("DistilbertForClassification_v1"):
+            values["prediction"] = values["DistilbertForClassification_v1"]
+        elif not values.get("prediction"):
+            values["prediction"] = 0.0
+        values["prediction"] = round(values["prediction"] * 100, 1)
+        return values
+
+    @validator("class_id")
+    def source(cls, class_id):
+        return class_id.split(".")[1]
 
     def as_dict(self):
         return {"id": self.id, "class_id": self.class_id, "author": self.author, "content": self.content, "url": self.url, "date": self.date, "prediction": self.prediction, "note": self.note}

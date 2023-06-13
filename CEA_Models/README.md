@@ -24,6 +24,10 @@ Seuls les documents non évalués par le modèle actuellement en Production sero
 notés. Ce processus peut être gourmand en ram. Le champs `batch_size` permet de
 gérer ce problème.
 
+### Pour lancer la notation
+
+![](.README_images/064ab314.png)
+
 ### Ajouter des metrics, des artifacts
 Dans le ficher `relevance.py`, la méthode `evaluate` de la classe DocumentRelevanceRun,
 à pour résponsabiliter d'ajouter des metrics et artifacts aux runs.
